@@ -72,17 +72,20 @@ export default function Home() {
         </div>
 
         {/* CTA Buttons */}
-        <div className="flex justify-center mt-8">
+        <div className="flex flex-col sm:flex-row gap-4 justify-center mt-8">
           <Link
-            href="/auth"
-            className="px-8 py-3 bg-linear-to-r from-orange-500 to-pink-500 hover:from-orange-600 hover:to-pink-600 text-white font-semibold rounded-lg transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105"
+            href="/login"
+            className="px-8 py-3 bg-orange-500 hover:bg-orange-600 text-white font-medium rounded-lg transition-colors"
           >
-            Get Started →
+            Login
+          </Link>
+          <Link
+            href="/register"
+            className="px-8 py-3 bg-white hover:bg-gray-50 text-orange-500 font-medium rounded-lg border-2 border-orange-500 transition-colors"
+          >
+            Create Account
           </Link>
         </div>
-        <p className="text-sm text-gray-500 mt-2">
-          Login or create an account to continue
-        </p>
       </div>
     </div>
   );

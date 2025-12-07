@@ -44,6 +44,7 @@ function CartContent() {
   
   // Modal state
   const [modalOpen, setModalOpen] = useState(false);
+  const [modalType, setModalType] = useState<'delete' | 'checkout' | 'success'>('delete');
   const [productToDelete, setProductToDelete] = useState<{ id: string; name: string } | null>(null);
 
   const loadCart = useCallback(async () => {
@@ -91,6 +92,7 @@ function CartContent() {
 
   const handleRemove = (productId: string, productName: string) => {
     setProductToDelete({ id: productId, name: productName });
+    setModalType('delete');
     setModalOpen(true);
   };
 
@@ -116,7 +118,7 @@ function CartContent() {
     }
   };
 
-  const handleCheckout = async () => {
+  const handleCheckout = () => {
     if (!user) return;
 
     // Validate all items have sufficient stock
@@ -133,7 +135,15 @@ function CartContent() {
       return;
     }
 
-    if (!confirm('Lanjutkan checkout? Pesanan akan dibuat.')) return;
+    // Show checkout confirmation modal
+    setModalType('checkout');
+    setModalOpen(true);
+  };
+
+  const confirmCheckout = async () => {
+    if (!user) return;
+
+    setModalOpen(false);
 
     try {
       setCheckingOut(true);
@@ -141,8 +151,14 @@ function CartContent() {
 
       await createOrderFromCart(user.uid);
       
-      alert('Pesanan berhasil dibuat! ✅');
-      router.push('/customer/orders');
+      // Show success modal
+      setModalType('success');
+      setModalOpen(true);
+      
+      // Redirect after 1.5 seconds
+      setTimeout(() => {
+        router.push('/customer/orders');
+      }, 1500);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Gagal checkout');
     } finally {
@@ -358,12 +374,28 @@ function CartContent() {
           setModalOpen(false);
           setProductToDelete(null);
         }}
-        onConfirm={confirmRemove}
-        title="Hapus dari Keranjang?"
-        message={productToDelete ? `Apakah Anda yakin ingin menghapus "${productToDelete.name}" dari keranjang?` : ''}
-        confirmText="Hapus"
-        cancelText="Batal"
-        type="danger"
+        onConfirm={modalType === 'delete' ? confirmRemove : modalType === 'checkout' ? confirmCheckout : () => router.push('/customer/orders')}
+        title={
+          modalType === 'delete'
+            ? 'Hapus dari Keranjang?'
+            : modalType === 'checkout'
+            ? 'Konfirmasi Checkout'
+            : 'Pesanan Berhasil! ✅'
+        }
+        message={
+          modalType === 'delete'
+            ? productToDelete
+              ? `Apakah Anda yakin ingin menghapus "${productToDelete.name}" dari keranjang?`
+              : ''
+            : modalType === 'checkout'
+            ? `Lanjutkan checkout? Pesanan akan dibuat dan stok produk akan dikurangi.`
+            : 'Pesanan Anda berhasil dibuat! Mengarahkan ke halaman pesanan...'
+        }
+        confirmText={
+          modalType === 'delete' ? 'Hapus' : modalType === 'checkout' ? 'Lanjutkan' : 'OK'
+        }
+        cancelText={modalType === 'success' ? undefined : 'Batal'}
+        type={modalType === 'delete' ? 'danger' : modalType === 'checkout' ? 'warning' : 'info'}
       />
     </div>
   );

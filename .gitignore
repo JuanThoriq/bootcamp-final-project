@@ -39,3 +39,16 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# AI-generated documentation (for personal learning)
+LEARNING_FUNDAMENTALS.md
+UI_UX_IMPROVEMENTS.md
+POLISH_SUMMARY.md
+SUBMISSION_GUIDE.md
+DEPLOY_GUIDE.md
+QUICK_START.md
+
+# Helper scripts
+cleanup.ps1
+deploy-github.ps1
+show-env.ps1
